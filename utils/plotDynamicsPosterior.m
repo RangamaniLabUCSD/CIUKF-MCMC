@@ -65,11 +65,11 @@ if sepStateFigs
         fname = [savedir, filename, '_', state_names{i}, '.png'];
         saveas(gcf, fname)
         % write to latex file
-        fname = [savedir, filename, '_', state_names{i}, '.tex'];
-        datPath = [savedir,filename, state_names{i},'data/'];
-        relDatPath = [filename, state_names{i},'data'];
-        matlab2tikz(fname, 'standalone', true, 'dataPath', datPath, 'relativeDataPath',relDatPath,...
-            'externalData', true);
+        % fname = [savedir, filename, '_', state_names{i}, '.tex'];
+        % datPath = [savedir,filename, state_names{i},'data/'];
+        % relDatPath = [filename, state_names{i},'data'];
+        % matlab2tikz(fname, 'standalone', true, 'dataPath', datPath, 'relativeDataPath',relDatPath,...
+        %     'externalData', true);
         close gcf
     end
 else 
@@ -103,11 +103,11 @@ else
     fname = [savedir, filename, '.png'];
     saveas(gcf, fname)
     % write to latex file
-    fname = [savedir, filename, '.tex'];
-    datPath = [savedir,filename, '_data/'];
-    relDatPath = [filename, state_names{i},'data'];
-    matlab2tikz(fname, 'standalone', true, 'dataPath', datPath, 'relativeDataPath',relDatPath,...
-        'externalData', true);
+    % fname = [savedir, filename, '.tex'];
+    % datPath = [savedir,filename, '_data/'];
+    % relDatPath = [filename, state_names{i},'data'];
+    % matlab2tikz(fname, 'standalone', true, 'dataPath', datPath, 'relativeDataPath',relDatPath,...
+    %     'externalData', true);
     close gcf
 end
 end

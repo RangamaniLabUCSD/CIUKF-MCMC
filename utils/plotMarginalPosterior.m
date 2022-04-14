@@ -38,13 +38,13 @@ function plotMarginalPosterior(samples, ptrue, paramNames, paramNamesTex, savedi
         % save png
         fname = [savedir, fileprefix, paramNames{i}, '.png'];
         saveas(gcf, fname)
-        % write to latex file
-        fname = [savedir, fileprefix, paramNames{i}, '.tex'];
-        datPath = [savedir,fileprefix, paramNames{i},'data/'];
-        relDatPath = [fileprefix, paramNames{i},'data'];
+        % % write to latex file
+        % fname = [savedir, fileprefix, paramNames{i}, '.tex'];
+        % datPath = [savedir,fileprefix, paramNames{i},'data/'];
+        % relDatPath = [fileprefix, paramNames{i},'data'];
 
-        cleanfigure; matlab2tikz(fname, 'standalone', true, 'dataPath', datPath, 'relativeDataPath',relDatPath,...
-         'externalData', true);
+        % cleanfigure; matlab2tikz(fname, 'standalone', true, 'dataPath', datPath, 'relativeDataPath',relDatPath,...
+        %  'externalData', true);
         close gcf
     end
 end
