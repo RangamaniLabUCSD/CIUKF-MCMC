@@ -131,7 +131,7 @@ logLikelihood = @(theta, y) ciukflp_quadProg(theta, x0high, P0, f, H,...
     Q, R, y, alph,beta,kappa,eps, optOptions);
 
 if isempty(gcp('nocreate'))
-   parpool(24)
+   parpool(4)
 end
 
 % Data into UQLab STRUCT

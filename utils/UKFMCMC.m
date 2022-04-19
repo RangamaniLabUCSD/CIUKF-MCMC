@@ -63,8 +63,6 @@ function [samples, accRatio, propC] = UKFMCMC(y, theta, propC, M, m0, Sigma0, f,
     %
     %       propC       Proposal covariance at the end of sampling.
     
-    addpath('../ukf/') % add ukf 
-    addpath('../dram/') % add mcmc 
     addpath('../')
 
     alpha = 1e-3;
