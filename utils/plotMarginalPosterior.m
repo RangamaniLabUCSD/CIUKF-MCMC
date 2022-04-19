@@ -2,9 +2,9 @@ function plotMarginalPosterior(samples, ptrue, paramNames, paramNamesTex, savedi
 % PLOTMARGINALPOSTEIOR plots the marginal posterior from samples
 %   plotMarginalPosterior(samples, ptrue, paramNames, paramNamesTex, savedir, fileprefix, thetaMap, thetaMean, fits, x_fit, priors, bounds) standard usage
 
-    % addpath for matlab2tkz
-    myPath = pwd; paths = strsplit(myPath, 'Project-');
-    addpath([paths{1}, 'matlab2tkz/'])
+    % % addpath for matlab2tkz
+    % pathname = ''; # set path 
+    % addpath(pathname 'matlab2tkz/'])
 
     numparam = numel(ptrue);
     samplePnts = makeSamplePnts(bounds, 400);

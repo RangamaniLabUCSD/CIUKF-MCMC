@@ -16,9 +16,9 @@ if nargin == 18 & ~sepStateFigs
     error('Not enough input args')
 end
 
-% addpath for matlab2tkz
-myPath = pwd; paths = strsplit(myPath, 'Project-');
-addpath([paths{1}, 'matlab2tkz/'])
+% % addpath for matlab2tkz
+% pathname = ''; # set path 
+% addpath(pathname 'matlab2tkz/'])
 
 numStates = numel(x0);
 green = [75 93 22] / 255; purple = [173 3 222] / 255;
