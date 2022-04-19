@@ -6,7 +6,7 @@ addpath('../utils/')
 plottingPreferencesNJL;
 
 % folder to save results
-savedir = './MAPK/BISTABLE/';
+savedir = './BISTABLE/';
 mkdir(savedir); 
 
 % Set seed and initialize uqlab
