@@ -93,9 +93,9 @@ for i = 1:numel(noiseLevels)
 
     [xpost, index] = runEnsembleSimulation(@(t,x,theta) two_state(t,x,theta), [], samples, t, x0, 5000);
     fname = [filename, 'dynamicsPost'];
-    plotDynamicsPosterior_timeDep(samples, 5000, t, t, y, x0,  ...
-        @(t,x,theta) two_state(t,x,theta),savedir, fname, ptrue, thetaMap, thetaMean, ...
-        [1,1], {'x1','x2'}, [0.025 0.975], [1,1]);
+
+    plotDynamicsPosterior(samples, 5000, t, t, y, x0,  @(t,x,theta) two_state(t,x,theta),savedir, ...
+        fname, ptrue, thetaMap,thetaMean, [1,1], {'x1','x2'}, [0.025 0.975], xpost,[1;1])
 
     fname = [filename, 'param'];
     paramNames = {'k1e', 'k12', 'k21', 'b'};
@@ -189,13 +189,14 @@ function plotChains(samples, savedir, filename, paramNames, subsamp, burnin)
         xlabel('MCMC Steps');
         ylabel(paramNames{prm});
 
-        fname = [savedir, filename, paramNames{prm},'.tex'];
+        fname = [savedir, filename, paramNames{prm}];
         datPath = [savedir, filename, paramNames{prm},'_data/'];
         relDatPath = [filename, paramNames{prm},'_data/'];
 
-        cleanfigure; 
-        matlab2tikz(fname, 'standalone', true, 'dataPath', datPath, 'relativeDataPath',relDatPath,...
-            'externalData', true);
+        saveas(gcf, [fname, '.png']);
+        % cleanfigure; 
+        % matlab2tikz([fname, '.tex'], 'standalone', true, 'dataPath', datPath, 'relativeDataPath',relDatPath,...
+        %     'externalData', true);
     end
 end
 
