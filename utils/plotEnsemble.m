@@ -32,7 +32,7 @@ function plotEnsemble(samples, savedir, filename, paramNames, subsamp, burnin)
         datPath = [savedir, filename, paramNames{prm},'_data/'];
         relDatPath = [filename, paramNames{prm},'_data/'];
 
-        saveas(gcf, fname, '.png')
+        saveas(gcf, [fname '.png'])
         % cleanfigure; 
         % matlab2tikz([fname, '.tex'], 'standalone', true, 'dataPath', datPath, 'relativeDataPath',relDatPath,...
         %     'externalData', true);

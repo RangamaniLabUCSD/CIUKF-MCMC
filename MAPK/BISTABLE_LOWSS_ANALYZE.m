@@ -68,11 +68,11 @@ odeOptsTrue = odeset('Jacobian', @(t, x) Jac(x,ptrue));
 
 % load the MCMC samples and all of the info on the run
 run1 = load([savedir, 'results_LOWSS_noisy1.mat']);
-run2 = load([savedir, 'results_LOWSS_noisy2.mat']);
+run2 = []; %load([savedir, 'results_LOWSS_noisy2.mat']); % only one run
 
 % process samples
 postSamples_1 = run1.BayesianAnalysis.Results.Sample;
-postSamples_2 = run2.BayesianAnalysis.Results.Sample;
+postSamples_2 = []; %run2.BayesianAnalysis.Results.Sample;
 
 fprintf('IACT with no burn in for the first run: \n');
 IACTfull_run1 = computeIACT(postSamples_1);
