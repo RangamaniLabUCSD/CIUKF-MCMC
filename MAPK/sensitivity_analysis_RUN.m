@@ -7,7 +7,7 @@ addpath('../utils/')
 plottingPreferencesNJL;
 
 % folder to save results
-savedir = './MAPK/sensitivity_analysis/';
+savedir = './sensitivity_analysis/';
 mkdir(savedir); 
 
 % Set seed and initialize uqlab
