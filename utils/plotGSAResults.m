@@ -1,6 +1,6 @@
 function plotGSAResults(GSAResults, savedir, fileprefix, paramNames, qoiNames)
-    totalInd = GSAResults.Results.Total;
-    firstOrderInd = GSAResults.Results.FirstOrder;
+    totalInd = GSAResults.Results.Total
+    firstOrderInd = GSAResults.Results.FirstOrder
 
     % total order
     for qoi = 1:numel(qoiNames)
