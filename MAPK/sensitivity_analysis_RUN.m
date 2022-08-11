@@ -7,7 +7,7 @@ addpath('../utils/')
 plottingPreferencesNJL;
 
 % folder to save results
-savedir = './MAPK/sensitivity_analysis/';
+savedir = './sensitivity_analysis/';
 mkdir(savedir); 
 
 % Set seed and initialize uqlab
@@ -45,7 +45,7 @@ SobolSensOpts.Type = 'Sensitivity';
 SobolSensOpts.Method = 'Sobol';
 SobolSensOpts.Input = input;
 SobolSensOpts.Sobol.Sampling = 'sobol';
-SobolSensOpts.Sobol.SampleSize = 5000;
+SobolSensOpts.Sobol.SampleSize = 5;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -116,6 +116,7 @@ oscModel = uq_createModel(modelOptsOsc);
 fprintf('Running analysis for Oscillations\n');
 oscAnalysis       = SobolSensOpts;
 oscAnalysis.Model = oscModel;
+
 oscSensitivtyResults = uq_createAnalysis(oscAnalysis);
 
 save([savedir, 'oscGSA.mat'], 'oscSensitivtyResults');
