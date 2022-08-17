@@ -15,7 +15,7 @@ function Jac = synaptic_plasticity_Jacobian(t, x, p) %, f_Ca)
     k1 = p(1); k2 = p(2); k3 = p(3); k4 = p(4); k5 = p(5); k6 = p(6); k7 = p(7); k8 = p(8);
     c1 = p(9); c2 = p(10); c3 = p(11); c4 = p(12);
     Km1 = p(13); Km2 = p(14); Km3 = p(15); Km4 = p(16); Km5 = p(17);
-    K0 = p(18); P0 = p(19); Ktot = p(20); Ptot = p(21); Atot = p(22); Ca = p(23);
+    K0 = p(18); P0 = p(19); Ktot = p(20); Atot = p(21); Ptot = p(22); Ca = p(23);
 
     % Unpack states
     pK = x(1); P = x(2); A = x(3);
