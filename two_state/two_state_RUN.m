@@ -43,7 +43,8 @@ R = @(theta) theta(end)*eye(m); % measurement nosie theta(end) is the cov
 Rfixed = @(theta, sigmaR) sigmaR*eye(m);
 
 % discrete time dynamics operator (psi)
-f = @(t_idx, x, theta)propf(t_idx, x, @(t,x)two_state(t, x, theta), dt/DT, dt, DT);
+u = @(t) stepFuncInput(t);
+f = @(t_idx, x, theta)propf(t_idx, x, @(t,x)two_state(t, x, [theta, u(t)]), dt/DT, dt, DT);
 
 % general other constants and parameters
 num_samples = 3e4;
@@ -171,4 +172,14 @@ function xout = propf(t_idx, xin, f, N, dt, DT)
     [~, xout] = ode15s(@(t,x)f(t, x), [t, t+dt], xin);
     % end
     xout = xout(end,:)';
+end
+
+function u = stepFuncInput(t)
+    u_init = 0; slope = 2;
+    ton = 1;
+    if t < ton
+        u = u_init + (slope*t);
+    else
+        u = 1.5*exp(1-t);
+    end
 end

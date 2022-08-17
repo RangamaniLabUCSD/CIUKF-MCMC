@@ -1,64 +1,58 @@
-function dxdt = two_state(t, x, params)
-% TWOSTATE This function evaluates the differential equation for the two compartment model presented in Villaverde et al. 2019 IEEE Control Sys. Lett.
-%    dxdt = two_state(t, x, params)
-% x = [x1, x2, x3, x4]' where x(x) = u(t) and x4 = t
-% u(t) = a*t + b so x2dot = a
-
-% default parameters
-% Parameter vector: [k1e, k12, k21, b];
-    default_params = [1, 1, 1, 2];       
-    if nargin < 2
-	    params = default_params;
-    end
+function xdot = two_state(time, x_values, p)
+    % function two_state takes
+    %
+    % either	1) no arguments
+    %       	    and returns a vector of the initial values
+    %
+    % or    	2) time - the elapsed time since the beginning of the reactions
+    %       	   x_values    - vector of the current values of the variables
+    %       	    and returns a vector of the rate of change of value of each of the variables
+    %
+    % two_state can be used with MATLABs odeN functions as 
+    %
+    %	[t,x] = ode23(@two_state, [0, t_end], two_state)
+    %
+    %			where  t_end is the end time of the simulation
+    %
+    %The variables in this model are related to the output vectors with the following indices
+    %	Index	Variable name
+    %	  1  	  x1
+    %	  2  	  x2
+    %
+    %--------------------------------------------------------
+    % output vector
     
-    % unpack parameters (for clarity)
-    k1e = params(1); % k1e + k12
-    k12 = params(2); 
-    k21 = params(3);
-    b   = params(4);
-
-    % input slope
-    a1 = 1;
-    u = stepFuncInput(t);
-
-    dxdt = [-(k1e + k12)*x(1) + k21*x(2) + b*u;  
-            k12*x(1) - k21*x(2)];
-            % stepFuncInput(x(3), x(4), 1, 1, a1, 1);
-            % 1]; % time dependent
+    xdot = zeros(2, 1);
     
-    % % unpack parameters (for clarity)
-    % k1e = params(1);
-    % k12 = params(2);
-    % k21 = params(3);
-    % b   = params(4);
-
-    % % input slope
-    % a = 1;
-
-    % dxdt = [-(k1e + k12)*x(1) + k21*x(2) + b*x(3);  
-    %         k12*x(1) - k21*x(2);
-    %         stepFuncInput(x(3), x(4), 1, 1, a, 1);
-    %         1]; % time dependent
-end
-
-% function dudt = stepFuncInput(u, t,ton, toff, uon, uoff)
-%     if t < ton
-%         dudt = uoff;
-%     elseif t >= ton
-%         dudt = -u; 
-%     elseif t >= ton && u <= 0.5
-%         dudt = 0;
-%     else
-%         dudt = 0;
-%     end
-% end
-
-function u = stepFuncInput(t)
-    u_init = 0; slope = 2;
-    ton = 1;
-    if t < ton
-        u = u_init + (slope*t);
-    else
-        u = 1.5*exp(1-t);
-    end
-end
+    %--------------------------------------------------------
+    % compartment values
+    
+    compartment = 1;
+    
+    %--------------------------------------------------------
+    % parameter values 
+     
+    k1e = p(1);
+    k12 = p(2);
+    k21 = p(3);
+    b = p(4);
+    u = p(5);
+    
+    %--------------------------------------------------------
+    % unpack xvalues 
+     
+    x1 = x_values(1);
+    x2 = x_values(2);
+    
+    %--------------------------------------------------------
+    % assignment rules
+    
+    %--------------------------------------------------------
+    % algebraic rules
+    
+    %--------------------------------------------------------
+    
+    % rate equations
+    xdot(1) = -(k1e+k12)*x1+k21*x2+b*u;
+    xdot(2) = k12*x1-k21*x2;
+    
