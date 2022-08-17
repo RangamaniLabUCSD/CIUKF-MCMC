@@ -26,13 +26,13 @@ DT = 0.01; tfine = t0:DT:tend;
 if dt < DT, DT = dt; end
 
 % MODEL PARAMETERS
-ptrueFull = [2, 15, 1, 120, 2, 15, 1, 80, 1, 1, 6, 8, 10, 0.3, 4, 10, 1, 0.5, 0.5, 20, 20, 1]; 
+ptrueFull = [2, 15, 1, 120, 2, 15, 1, 80, 1, 1, 6, 8, 10, 0.3, 4, 10, 1, 0.5, 0.5, 20, 1, 20];
 
 paramNames = {'k1', 'k2', 'k3', 'k4', 'k5', 'k6', 'k7', 'k8', 'c1', 'c2', 'c3', 'c4', 'Km1', ...
-        'Km2', 'Km3', 'Km4', 'Km5', 'K0', 'P0', 'Ktot', 'Ptot', 'Atot'};
+        'Km2', 'Km3', 'Km4', 'Km5', 'K0', 'P0', 'Ktot', 'Atot', 'Ptot'};
 paramNamesTex = {'$k_1$', '$k_2$', '$k_3$', '$k_4$', '$k_5$', '$k_6$', '$k_7$', '$k_8$', ...
         '$c_1$', '$c_2$', '$c_3$', '$c_4$', '$K_{m1}$', '$K_{m2}$', '$K_{m3}$', '$K_{m4}$',...
-        '$K_{m5}$', '$K_0$', '$P_0$', 'K_{tot}', 'P_{tot}', 'A_{tot}'};
+        '$K_{m5}$', '$K_0$', '$P_0$', 'K_{tot}', 'A_{tot}', 'P_{tot}'};
 state_names = {'x1', 'x2', 'x3'};
 
 % Fix subset of params based on sensitivity analysis
@@ -59,8 +59,8 @@ Ca_basal = 0.1; Ca_peak = 4; % calcium input
 start = 1; stop = 3;
 f_Ca = @(t) stepFunc(t, start, stop, Ca_basal, Ca_peak);
 
-kinpho = @(t, x, theta) phosphatase_kinase(t, x, thetaFull(theta), f_Ca);
-Jac = @(t,x, theta) phosphatase_kinase_Jacobian(t, x, thetaFull(theta), f_Ca);
+kinpho = @(t, x, theta) synaptic_plasticity(t, x, [thetaFull(theta), f_Ca(t)]);
+Jac = @(t,x, theta) synaptic_plasticity_Jacobian(t, x, [thetaFull(theta), f_Ca(t)]);
 
 odeOpts = odeset('Jacobian', @(t, x) Jac(t,x,theta));
 [~, yTrue] = ode15s(@(t,x) kinpho(t,x,ptrue), tfine, x0);
@@ -165,7 +165,7 @@ data.Name = 'Noisy Measurements';
 Solver.Type = 'MCMC'; % Markov Chain Monte Carlo Solver
 Solver.MCMC.Sampler = 'AIES'; % Affine Invariant Ensemble Algorithm
 Solver.MCMC.NChains = 150; % Number of chains for AIES
-Solver.MCMC.Steps = 2500; % Steps per chain
+Solver.MCMC.Steps = 8000; % Steps per chain
 
 % Everything in a STRUCT for the software
 BayesOpts.Type = 'Inversion';
@@ -176,61 +176,7 @@ BayesOpts.LogLikelihood = logLikelihood;
 BayesOpts.Solver = Solver;
 
 BayesianAnalysis = uq_createAnalysis(BayesOpts);
-save([savedir, 'results_AIES.mat'], 'BayesianAnalysis')
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% RUN2  %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-prev = load([savedir, 'results_AIES_run1.mat']);
-lastPoints = prev.BayesianAnalysis.Results.Sample(end,:,:);
-
-% Inverse problem solver
-Solver.Type = 'MCMC'; % Markov Chain Monte Carlo Solver
-Solver.MCMC.Sampler = 'AIES'; % Affine Invariant Ensemble Algorithm
-Solver.MCMC.NChains = 150; % Number of chains for AIES
-Solver.MCMC.Steps = 1500; % Steps per chain
-
-% Restart from last run
-Solver.MCMC.Seed = lastPoints;
-
-% Everything in a STRUCT for the software
-BayesOpts.Type = 'Inversion';
-BayesOpts.Name = 'MAPK';
-BayesOpts.Prior = priorDistribution;
-BayesOpts.Data = prev.BayesianAnalysis.Data; % ensure we use exactly the same data as the previous run
-BayesOpts.LogLikelihood = logLikelihood;
-BayesOpts.Solver = Solver;
-
-% RUN QULab code
-BayesianAnalysis = uq_createAnalysis(BayesOpts);
-save([savedir, 'results_AIES_run2.mat'], 'BayesianAnalysis')
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% RUN3  %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-prev = load([savedir, 'results_AIES_run2.mat']);
-lastPoints = prev.BayesianAnalysis.Results.Sample(end,:,:);
-
-% Inverse problem solver
-Solver.Type = 'MCMC'; % Markov Chain Monte Carlo Solver
-Solver.MCMC.Sampler = 'AIES'; % Affine Invariant Ensemble Algorithm
-Solver.MCMC.NChains = 150; % Number of chains for AIES
-Solver.MCMC.Steps = 2500; % Steps per chain
-
-% Restart from last run
-Solver.MCMC.Seed = lastPoints;
-
-% Everything in a STRUCT for the software
-BayesOpts.Type = 'Inversion';
-BayesOpts.Name = 'MAPK';
-BayesOpts.Prior = priorDistribution;
-BayesOpts.Data = prev.BayesianAnalysis.Data; % ensure we use exactly the same data as the previous run
-BayesOpts.LogLikelihood = logLikelihood;
-BayesOpts.Solver = Solver;
-
-% RUN QULab code
-BayesianAnalysis = uq_createAnalysis(BayesOpts);
-save([savedir, 'results_AIES_run3.mat'], 'BayesianAnalysis')
+save([savedir, 'results_synaptic_plasticity.mat'], 'BayesianAnalysis')
 
 %%%% Functions %%%%
 function thetaFull = fullParams(theta, freeParamIndex, fixedParamIndex, ptrueFull)
