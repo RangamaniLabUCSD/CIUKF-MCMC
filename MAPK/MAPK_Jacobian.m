@@ -1,4 +1,4 @@
-function jac = MAPK_Jacobian(x, p)
+function jac = MAPK_Jacobian(t, x, p)
 % MAPK_JACOBIAN computes jacobian matrix for the model MAPK signalling cascade
 %   dxdt = MAPK_cascade(x, p)
 %
@@ -14,10 +14,10 @@ function jac = MAPK_Jacobian(x, p)
     k4    =   p(7);
     k5    =   p(8);
     k6    =   p(9);
-    n1    =   p(10);
-    K1    =   p(11);
-    n2    =   p(12);
-    K2    =   p(13);
+    K1    =   p(10);
+    n1    =   p(11);
+    K2    =   p(12);
+    n2    =   p(13);
     alph =   p(14);
 
     % conservation law

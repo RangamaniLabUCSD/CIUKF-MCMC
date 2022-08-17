@@ -7,7 +7,7 @@ addpath('../utils/')
 plottingPreferencesNJL;
 
 % folder to save results
-savedir = './MAPK/sensitivity_analysis/';
+savedir = './sensitivity_analysis/';
 mkdir(savedir); 
 
 
@@ -30,5 +30,5 @@ plotGSAResults(lowSensitivtyResults, savedir, '_highSSGSA', paramNames, qoiNames
 
 % Oscillations
 load([savedir, 'oscGSA.mat']);
-qoiNames = {'LCA', 'periord', 'x3-mean'};
-plotGSAResults(lowSensitivtyResults, savedir, '_oscGSA', paramNames, qoiNames)
+qoiNames = {'LCA', 'period', 'x3-mean'};
+plotGSAResults(oscSensitivtyResults, savedir, '_oscGSA', paramNames, qoiNames)

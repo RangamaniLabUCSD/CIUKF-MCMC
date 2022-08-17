@@ -21,8 +21,8 @@ tfine = t0:DT:tend;
 if dt < DT, DT = dt; end
 
 % Functions for the ODE
-MAPK = @(x, theta) MAPK_cascade(x, theta);
-Jac = @(x, theta) MAPK_Jacobian(x, theta);
+MAPK = @(t, x, theta) MAPK_cascade(t, x, theta);
+Jac = @(t, x, theta) MAPK_Jacobian(t, x, theta);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Bistable Case %%
@@ -37,8 +37,8 @@ ptrueBistable = [0.22,10,53, 0.0012, 0.006, 0.049, 0.084, 0.043, 0.066, 5, 9.5, 
 x0High   = [0.1245; 2.4870; 31.2623];
 x0Low  = [0.0015; 3.6678; 28.7307]; 
 
-xoutLow = solve(x0Low, @(t,x) MAPK(x, ptrueBistable), tfine, @(t,x) Jac(x,ptrueBistable));
-xoutHigh = solve(x0High, @(t,x) MAPK(x, ptrueBistable), tfine, @(t,x) Jac(x,ptrueBistable));
+xoutLow = solve(x0Low, @(t,x) MAPK(t, x, ptrueBistable), tfine, @(t,x) Jac(t, x,ptrueBistable));
+xoutHigh = solve(x0High, @(t,x) MAPK(t, x, ptrueBistable), tfine, @(t,x) Jac(t, x,ptrueBistable));
 
 highData = load('./BISTABLE/results_HIGHSS_noisy1.mat').BayesianAnalysis.Data.y;
 lowData = load('./BISTABLE/results_LOWSS_noisy1.mat').BayesianAnalysis.Data.y;
