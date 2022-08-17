@@ -39,31 +39,31 @@ R = @(theta) diag(theta(end-2:end)); % measurement nosie theta(end) is the cov
 % MODEL PARAMETERS
 % Bistable fixed point: S1t = 0.22, S2t = 10, S3t = 53, k1 = 0.0012, k2 = 0.006, k3 = 0.049, k4 = 0.084, 
 %   k5 = 0.043, k6 = 0.066, n1 = 5, K1 = 9.5, n2 = 10, K2 = 15, α = 95
-ptrueFull = [0.22,10,53, 0.0012, 0.006, 0.049, 0.084, 0.043, 0.066, 5, 9.5, 10, 15, 95];
+ptrueFull = [0.22,10,53, 0.0012, 0.006, 0.049, 0.084, 0.043, 0.066, 9.5, 5, 15, 10, 95];
 freeParamIndex = [5, 7, 8, 9]; % estimate k2, k4, k5, k6
 fixedParamIndex = setdiff(1:numel(ptrueFull), freeParamIndex);
 ptrue = ptrueFull(freeParamIndex);
 
 % Bounds of parameter values
-paramBounds = [0 100; 0 100; 0 100; 0 0.1; 0 0.1; 0 0.05; 0 0.1; 0 0.05; 0 0.1; 5 10; 0 10; 5 10; 0 20; 0 100];
+paramBounds = [0 100; 0 100; 0 100; 0 0.1; 0 0.1; 0 0.05; 0 0.1; 0 0.05; 0 0.1; 0 10; 5 10; 0 20; 5 10; 0 100];
 bounds = paramBounds(freeParamIndex,:);
-paramNames = {'S1t','S2t','S3t','k1', 'k2','k3','k4','k5','k6','n1','K1','n2','K2','alpha'};
+paramNames = {'S1t','S2t','S3t','k1', 'k2','k3','k4','k5','k6','K1','n1','K2','n2','alpha'};
 paramNames = paramNames(freeParamIndex);
 state_names = {'x1', 'x2', 'x3'};
 
 x0high  = [0.1245; 2.4870; 31.2623]; % IC for high SS
 
 thetaFull = @(theta) fullParams(theta, freeParamIndex, fixedParamIndex, ptrueFull);
-MAPK = @(x, theta) MAPK_cascade(x, thetaFull(theta));
-Jac = @(x, theta) MAPK_Jacobian(x, thetaFull(theta));
+MAPK = @(t, x, theta) MAPK(t, x, thetaFull(theta));
+Jac = @(t, x, theta) MAPK_Jacobian(t, x, thetaFull(theta));
 
-MAPK_col = @(x, theta) MAPK_cascade(x, thetaFull(theta'));
+MAPK_col = @(t, x, theta) MAPK(t, x, thetaFull(theta'));
 
-odeOptsTrue = odeset('Jacobian', @(t, x) Jac(x,ptrue));
-[~, yTruehigh] = ode15s(@(t,x) MAPK(x, ptrue), tfine, x0high, odeOptsTrue);
+odeOptsTrue = odeset('Jacobian', @(t, x) Jac(t, x,ptrue));
+[~, yTruehigh] = ode15s(@(t,x) MAPK(t, x, ptrue), tfine, x0high, odeOptsTrue);
 
 % discrete time dynamics operator (psi)
-f = @(k, x, theta)propf(x,@(x) MAPK(x,theta), dt, k, @(t, x) Jac(x,theta));
+f = @(k, x, theta)propf(x,@(t, x) MAPK(t, x,theta), dt, k, @(t, x) Jac(t, x,theta));
 
 % Initialize noise
 % original multiplier for results_HIGHSS_run1.mat
@@ -184,3 +184,14 @@ BayesOpts.Solver = Solver;
 % RUN QULab code
 BayesianAnalysis = uq_createAnalysis(BayesOpts);
 save([savedir, 'results_AIES_noisy2.mat'], 'BayesianAnalysis')
+
+function xout = propf(xin, f, dt, k, jac)
+    % PROPF wrapper for discrete dynamics propagotor using odes15s
+    %   xout = propf(xin, f, dt, k, jac)
+    
+    t = k*dt;
+    xout = xin;
+    odeOpts = odeset('Jacobian', jac);
+    [~, xout] = ode15s(@(t,x)f(t, x), [t, t+dt], xout, odeOpts);
+    xout = xout(end,:)';
+end
