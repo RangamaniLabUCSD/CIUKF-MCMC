@@ -23,9 +23,11 @@ tfine = t0:DT:tend;
 if dt < DT, DT = dt; end
 
 % MODEL PARAMETERS
-ptrueFull = [2, 15, 1, 120, 2, 15, 1, 80, 1, 1, 6, 8, 10, 0.3, 4, 10, 1, 0.5, 0.5, 20, 20, 1]; 
+ptrueFull = [2, 15, 1, 120, 2, 15, 1, 80, 1, 1, 6, 8, 10, 0.3, 4, 10, 1, 0.5, 0.5, 20, 1, 20];
 paramNames = {'k1', 'k2', 'k3', 'k4', 'k5', 'k6', 'k7', 'k8', 'c1', 'c2', 'c3', 'c4', 'Km1', ...
-        'Km2', 'Km3', 'Km4', 'Km5', 'K0', 'P0', 'Ktot', 'Ptot', 'Atot'};
+        'Km2', 'Km3', 'Km4', 'Km5', 'K0', 'P0', 'Ktot', 'Atot', 'Ptot'};
+state_names = {'x1', 'x2', 'x3'};
+
 fixedParamIndex = []; % no fixed params - all params are ID
 freeParamIndex = setdiff(1:numel(ptrueFull), fixedParamIndex);
 ptrue = ptrueFull(freeParamIndex);
@@ -39,16 +41,15 @@ start = 1; stop = 3;
 f_Ca_LTP = @(t) stepFunc(t, start, stop, Ca_basal, 4.0);
 f_Ca_LTD = @(t) stepFunc(t, start, stop, Ca_basal, 2.2);
 
-kinpho_LTP = @(t, x, theta) phosphatase_kinase(t, x, thetaFull(theta), f_Ca_LTP);
-Jac_LTP = @(t,x, theta) phosphatase_kinase_Jacobian(t, x, thetaFull(theta), f_Ca_LTP);
+kinpho_LTP = @(t, x, theta) synaptic_plasticity(t, x, [thetaFull(theta), f_Ca_LTP(t)]);
+Jac_LTP = @(t,x, theta) synaptic_plasticity_Jacobian(t, x, [thetaFull(theta), f_Ca_LTP(t)]);
 
-kinpho_LTD = @(t, x, theta) phosphatase_kinase(t, x, thetaFull(theta), f_Ca_LTD);
-Jac_LTD = @(t,x, theta) phosphatase_kinase_Jacobian(t, x, thetaFull(theta), f_Ca_LTD);
+kinpho_LTD = @(t, x, theta) synaptic_plasticity(t, x, [thetaFull(theta), f_Ca_LTD(t)]);
+Jac_LTD = @(t,x, theta) synaptic_plasticity_Jacobian(t, x, [thetaFull(theta), f_Ca_LTD(t)]);
 
 xoutLTP = solve(x0, @(t,x) kinpho_LTP(t,x,ptrue), tfine, @(t,x) Jac_LTP(t,x,ptrue));
 xoutLTD = solve(x0, @(t,x) kinpho_LTD(t,x,ptrue), tfine, @(t,x) Jac_LTD(t,x,ptrue));
 
-% ltpData = load('../../Results/kinase_phosphatase/UKF_LTP_UQLab/results_AIES.mat').BayesianAnalysis.Data.y;
 sigmaR = 0.1*std(xoutLTP)';
 ltpData = generateData(@(t, x) kinpho_LTP(t, x, ptrue), x0, t, eye(3), sigmaR);
 
